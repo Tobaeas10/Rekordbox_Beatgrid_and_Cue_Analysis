@@ -1,0 +1,74 @@
+{
+ "magne": {
+  "id": "168278897",
+  "title": "Magne (Solo)",
+  "bpm": 145.0,
+  "anchor_s": 0.1067811329790027,
+  "truth_s": -0.0012013448275827016,
+  "start": 0.0,
+  "end": 186.22,
+  "cache": "/home/claude/c/cache_-_698_more_dubstep_songs/cache/",
+  "mp3": false,
+  "offset_ms": 47.891000000000005
+ },
+ "wasted": {
+  "id": "250318347",
+  "title": "Wasted (sQn-y)",
+  "bpm": 145.0,
+  "anchor_s": 0.5201610596629712,
+  "truth_s": 0.4143158965517253,
+  "start": 0.0,
+  "end": 162.54,
+  "cache": "/home/claude/c/cache_-_698_more_dubstep_songs/cache/",
+  "mp3": false,
+  "offset_ms": 47.891000000000005
+ },
+ "lowtek": {
+  "id": "214852156",
+  "title": "Lowtek (Egt/Quintuples)",
+  "bpm": 140.0,
+  "anchor_s": 0.42834632315027726,
+  "truth_s": 0.4795714285714306,
+  "start": 0.0,
+  "end": 180.0,
+  "cache": "/home/claude/c/cache_-_first_800_dubstep_songs___all_initial_dnb__ukg__2step_json/cache/",
+  "mp3": true,
+  "offset_ms": 0.0
+ },
+ "godfather": {
+  "id": "69579263",
+  "title": "Godfather (Hemza Remix) (Quintuples)",
+  "bpm": 140.0,
+  "anchor_s": 30.116483664907854,
+  "truth_s": 29.999823285714292,
+  "start": 30.0,
+  "end": 150.0,
+  "cache": "/home/claude/c/cache_-_698_more_dubstep_songs/cache/",
+  "mp3": false,
+  "offset_ms": 47.891000000000005
+ },
+ "funny": {
+  "id": "173365360",
+  "title": "The Funny (2B sQn/Egt/TrLike) (2D 16B)",
+  "bpm": 140.0,
+  "anchor_s": 15.107214541578264,
+  "truth_s": 15.00128571428572,
+  "start": 15.0,
+  "end": 225.0,
+  "cache": "/home/claude/c/cache_-_698_more_dubstep_songs/cache/",
+  "mp3": false,
+  "offset_ms": 44.0
+ },
+ "gora": {
+  "id": "126741311",
+  "title": "Gora (Solo)",
+  "bpm": 150.0,
+  "anchor_s": 15.701992107649275,
+  "truth_s": 15.600109,
+  "start": 15.0,
+  "end": 156.8,
+  "cache": "/home/claude/c/cache_-_698_more_dubstep_songs/cache/",
+  "mp3": false,
+  "offset_ms": 47.891000000000005
+ }
+}

@@ -1,0 +1,24 @@
+00_main - Subfiltronik - Blockz (Shockz Remi .m4a sr44100 RBbpm 140.0 gtbpm 140.0 dur 278
+     sec     0-  278 bpm  140.0000 | offset(RB-mine)   +47.9 ms (mod T/2  +47.9) | spread p5..p95  -0.7.. +0.6 worst   1.1 rms  0.4 (n=648)
+2-Step_01 - Blvckmore - Back Up [5]          .mp3 sr44100 RBbpm 136.0 gtbpm 136.0 dur 229
+     sec     0-  229 bpm  136.0000 | offset(RB-mine)  -195.9 ms (mod T/2  +24.7) | spread p5..p95  -0.8.. +0.8 worst   1.2 rms  0.5 (n=520)
+2-Step_02 - Phonetix - Something Special [2] .mp3 sr44100 RBbpm 128.0 gtbpm 128.0 dur 245
+     sec     0-  245 bpm  128.0000 | offset(RB-mine)   +50.0 ms (mod T/2  +50.0) | spread p5..p95  -0.5.. +0.3 worst   0.5 rms  0.3 (n=523)
+2-Step_03 - Shake Down - At Night (Scruz Rem .m4a sr44100 RBbpm 138.0 gtbpm 138.0 dur 160
+     sec     0-  160 bpm  138.0000 | offset(RB-mine)   +47.4 ms (mod T/2  +47.4) | spread p5..p95  -0.5.. +0.5 worst   0.7 rms  0.3 (n=368)
+DnB_01 - Hukae - Boingo (Unisixn Remix)      .m4a sr44100 RBbpm 172.0 gtbpm 172.291 dur 144
+     sec     0-  105 bpm  172.0000 | offset(RB-mine)   +48.2 ms (mod T/2  +48.2) | spread p5..p95  -0.4.. +0.4 worst   0.5 rms  0.3 (n=301)
+DnB_02 - Etherwood & Zara Kershaw - Lighthou .mp3 sr44100 RBbpm 174.0 gtbpm 174.0 dur 252
+     sec     0-  244 bpm  175.0000 | offset(RB-mine)    +0.0 ms (mod T/2   +0.0) | spread p5..p95  -0.6.. +0.4 worst   0.7 rms  0.3 (n=712)
+Dubstep_01 - Yoked - Paper Jam (Solo)        .m4a sr44100 RBbpm 147.0 gtbpm 147.0 dur 157
+     sec     0-  157 bpm  147.0000 | offset(RB-mine)   +46.2 ms (mod T/2  +46.2) | spread p5..p95  -0.6.. +0.5 worst   0.7 rms  0.3 (n=384)
+Dubstep_02 - Unown - Get Me One (4B sQn_sQn+ .m4a sr44100 RBbpm 144.0 gtbpm 144.0 dur 167
+     sec     0-  167 bpm  144.0000 | offset(RB-mine)   +43.8 ms (mod T/2  +43.8) | spread p5..p95  -0.3.. +0.3 worst   1.0 rms  0.3 (n=401)
+Dubstep_03 - Spass - Hi Tek (Blankface Remix .mp3 sr44100 RBbpm 140.0 gtbpm 140.0 dur 315
+     sec     0-  315 bpm  140.0000 | offset(RB-mine)    +0.5 ms (mod T/2   +0.5) | spread p5..p95  -0.4.. +0.4 worst   0.4 rms  0.3 (n=735)
+UKG (4x4 only)_01 - Shakhov - Twk Dub [4]    .m4a sr44100 RBbpm 138.0 gtbpm 138.0 dur 209
+     sec     0-  209 bpm  138.0000 | offset(RB-mine)   +47.6 ms (mod T/2  +47.6) | spread p5..p95  -0.5.. +0.5 worst   0.7 rms  0.3 (n=481)
+UKG (4x4 only)_02 - Bvnquet - Bringing me Jo .mp3 sr44100 RBbpm 130.0 gtbpm 130.0 dur 181
+     sec     0-  181 bpm  130.0000 | offset(RB-mine)  -203.7 ms (mod T/2  +27.1) | spread p5..p95  -0.5.. +0.5 worst   0.8 rms  0.3 (n=392)
+UKG (4x4 only)_03 - Deadkidd - Your Time [3] .mp3 sr44100 RBbpm 137.0 gtbpm 137.0 dur 199
+     sec     0-  199 bpm  137.0000 | offset(RB-mine)   +24.9 ms (mod T/2  +24.9) | spread p5..p95  -0.5.. +0.5 worst   0.7 rms  0.3 (n=453)

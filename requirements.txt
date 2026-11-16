@@ -1,0 +1,7 @@
+numpy
+scipy
+librosa
+psutil
+pyrekordbox
+sqlcipher3-wheels
+scikit-learn==1.9.1
