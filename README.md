@@ -347,12 +347,6 @@ Scripts that need many inputs say what they need in their docstring or `--help`.
 
 ---
 
-## 10. Project history
-
-`docs/handoff_beatgrid.md` and `docs/handoff_cues.md` are the long-form engineering notes: every experiment, the numbers behind each design decision, failed ideas and open problems. They were written as hand-over documents between working sessions and use some **old file names** (see `docs/rename_map.md` for the mapping to the current layout). `docs/restructuring_handoff.md` describes the cleanup that produced the current structure.
-
----
-
 ## License
 
 Licensed under the [Apache License 2.0](LICENSE) **with the Commons Clause**. In plain words: you may use, modify and share this software, including for professional work (DJing, studio, library services for yourself). You may **not sell** it, modified or not, or sell a product or service whose value comes substantially from it, unless you have agreed that with the author in writing. This makes it source-available, not "open source" in the OSI sense. Contributions are accepted on the condition that the author may license them under these same terms.
