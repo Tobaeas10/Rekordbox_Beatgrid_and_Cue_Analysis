@@ -30,7 +30,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
 import _bootstrap
-from lib import adaptive_workers, paths
+from lib import adaptive_workers, exit_pause, interactive_selection, paths
 OUT = paths.LOGS / 'cues'; BACKUP = paths.BACKUPS / 'cues'; KEEP_BACKUPS = 5
 STATE = paths.STATE_DIR / 'cue_analysis_state.json'; BEATGRID_STATE = paths.STATE_DIR / 'beatgrid_analysis_state.json'
 HOTKIND = {'A': 1, 'B': 2, 'C': 3, 'D': 5, 'E': 6, 'F': 7, 'G': 8, 'H': 9}
@@ -138,7 +138,7 @@ def main(argv=None):
     from lib.rekordbox.database import DjmdContent
     environment = ground_truth.load_env(paths.ENV_FILE)
     database_path, key = arguments.database_path or environment.get('REKORDBOX_DATABASE_PATH'), arguments.encryption_key or environment.get('REKORDBOX_ENCRYPTION_KEY', '')
-    if not database_path: sys.exit('REKORDBOX_DATABASE_PATH missing (.env or --database-path)')
+    if not database_path: sys.exit('Rekordbox database not set up: run SETUP again (or give --database-path)')
     database = rekordbox_database.open_database(database_path, key); share = rekordbox_database.share_directory_of(database, SimpleNamespace(share_directory=arguments.share_directory, database_path=database_path))
     state = json.loads(STATE.read_text(encoding='utf-8')) if STATE.exists() else {}
     if arguments.recolor:
@@ -175,7 +175,16 @@ def main(argv=None):
         jobs.append(dict(id=track_id, src=str(content_row.FolderPath), beats=beats, pl=sorted(playlists_by_content_id.get(content_row.ID, []))))
         meta[track_id] = (content_row, name, times, first_downbeat_index, own_cue_ids)
     print(f'{track_selection.describe(arguments)}: {len(rows)} selected, {len(jobs)} to predict, skipped {dict(skipped)}' + ('   [DRY RUN]' if arguments.dry_run else ''), flush=True)
-    if not jobs: controller.stop(); return
+    if not jobs:
+        base_argv = list(sys.argv[1:] if argv is None else argv)
+        if interactive_selection.should_ask(base_argv):
+            new_argv = interactive_selection.ask(argument_parser, argument_parser.parse_known_args, base_argv, 'Nothing to do for this selection.')
+            if new_argv is not None:
+                controller.stop()
+                try: database.close()
+                except Exception: pass
+                return main(new_argv)
+        controller.stop(); return
     OUT.mkdir(exist_ok=True); plans = []; start_time = time.time()
     position = 0; waiting_jobs = list(jobs); running = {}
     with ProcessPoolExecutor(max_workers=controller.maximum_workers) as executor:
@@ -223,4 +232,4 @@ def main(argv=None):
     print(f'master.db: cues written for {written_count} track(s) ({replaced_count} earlier cue(s) of this script replaced); backup in {BACKUP}, {time.time() - start_time:.0f}s')
     if written_count: print('IMPORTANT: restart Rekordbox to see the new cues.')
 
-if __name__ == '__main__': main()
+if __name__ == '__main__': exit_pause.run(main)

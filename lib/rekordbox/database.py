@@ -7,6 +7,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from lib import ffmpeg_tools
+
 # ---- pyrekordbox imports (0.5 layout first, older layout as fallback) ------------------
 try:
     from pyrekordbox.masterdb import MasterDatabase as RekordboxDatabase
@@ -42,7 +44,7 @@ def run(command, **keyword_arguments):
 
 
 def ffprobe(path):
-    probe_result = run(["ffprobe", "-v", "error", "-print_format", "json", "-show_streams", "-show_format", str(path)],
+    probe_result = run([ffmpeg_tools.executable("ffprobe"), "-v", "error", "-print_format", "json", "-show_streams", "-show_format", str(path)],
             text=True, encoding="utf-8", errors="replace")
     if probe_result.returncode != 0:
         raise RuntimeError(f"ffprobe failed for {path}: {probe_result.stderr.strip()[:200]}")

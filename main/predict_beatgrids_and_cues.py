@@ -7,7 +7,8 @@ Cue options: --minimum-confidence P, --skip-likely-wrong (no cues for tracks who
 Songs with several tempo sections, or with cues of your own in Rekordbox, get a grid but no cues (the table says why); nothing of yours is ever overwritten.
 For the grid only use predict_beatgrids.py, for cues only (tracks whose grid was analysed earlier) predict_cues.py."""
 import _bootstrap  # noqa: F401
+from lib import exit_pause
 import predict_beatgrids
 
 if __name__ == "__main__":
-    predict_beatgrids.main(with_cues=True, description=__doc__)
+    exit_pause.run(lambda: predict_beatgrids.main(with_cues=True, description=__doc__))

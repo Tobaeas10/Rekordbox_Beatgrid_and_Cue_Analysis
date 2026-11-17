@@ -1,0 +1,3 @@
+# batch files need Windows line endings, shell scripts Unix ones; keep both byte for byte
+*.bat -text
+*.command -text

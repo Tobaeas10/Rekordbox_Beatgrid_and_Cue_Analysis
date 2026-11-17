@@ -2,8 +2,16 @@ data/.env
 data/state/
 data/backups/
 data/cache/
+data/ffmpeg/
+.venv/
+*.bak
 logs/
 debug/
 __pycache__/
 *.pyc
 .idea/
+/Beatgrids and Cues.*
+/Beatgrids only.*
+/Cues only.*
+docs/
+*.zip

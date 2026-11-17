@@ -25,7 +25,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import _bootstrap
-from lib import adaptive_workers, paths
+from lib import adaptive_workers, exit_pause, interactive_selection, paths
 from lib.rekordbox.track_selection import added_at, describe, select
 STATE = paths.STATE_DIR / "beatgrid_analysis_state.json"
 BACKUP = paths.BACKUPS / "beatgrid"  # safe to delete
@@ -222,7 +222,7 @@ def main(argv=None, with_cues=False, description=None):
     environment = ground_truth.load_env(paths.ENV_FILE)
     database_path, key = arguments.database_path or environment.get("REKORDBOX_DATABASE_PATH"), arguments.encryption_key or environment.get("REKORDBOX_ENCRYPTION_KEY", "")
     if not database_path:
-        sys.exit("REKORDBOX_DATABASE_PATH missing (.env or --database-path)")
+        sys.exit("Rekordbox database not set up: run SETUP again (or give --database-path)")
     state = json.loads(STATE.read_text(encoding="utf-8")) if STATE.exists() else {}
     database = rekordbox_database.open_database(database_path, key)
     share = rekordbox_database.share_directory_of(database, SimpleNamespace(share_directory=arguments.share_directory, database_path=database_path))
@@ -235,7 +235,18 @@ def main(argv=None, with_cues=False, description=None):
         return
     todo = [content_row for content_row in rows if arguments.force or str(content_row.ID) not in state]
     if not todo:
-        print(f"{len(rows)} tracks selected, all already done (use --force to redo)")
+        base_argv = list(sys.argv[1:] if argv is None else argv)
+        if interactive_selection.should_ask(base_argv):
+            reason = f"No tracks found: {describe(arguments)}." if not rows else f"{len(rows)} tracks selected ({describe(arguments)}), all already done."
+            new_argv = interactive_selection.ask(argument_parser, argument_parser.parse_args, base_argv, reason)
+            if new_argv is not None:
+                controller.stop()
+                try:
+                    database.close()
+                except Exception:
+                    pass
+                return main(new_argv, with_cues, description)
+        print(f"No tracks found: {describe(arguments)}" if not rows else f"{len(rows)} tracks selected, all already done (use --force to redo)")
         if PENDING.exists() and not arguments.dry_run:
             apply_db(database, database_path, rekordbox_database, DjmdContent, json.loads(PENDING.read_text()), share, [], margin, False)
         return
@@ -489,4 +500,4 @@ def main(argv=None, with_cues=False, description=None):
 
 
 if __name__ == "__main__":
-    main()
+    exit_pause.run(main)

@@ -11,7 +11,7 @@ python main/predict_beatgrids_and_cues.py
 > **Read this first**
 > - **Tuned for one library.** The detectors and cue models were trained on the author's own library (bass music: dubstep, riddim, tearout, DnB, UKG, 140) and on the author's own cue system. They work very well there. For other music or a different cue system you should expect worse results until you adapt and retrain (see [Will it work on my library?](#5-will-it-work-on-my-library)).
 > - **It writes to your Rekordbox library** (`master.db` and the track analysis files). Every run makes backups and never touches cues you set yourself, but **make a Rekordbox library backup before your first run** and try `--dry-run` first.
-> - Developed and tested on **Windows 10/11 with Rekordbox 7** only. Rekordbox 6 and macOS/Linux may work but are untested (see [Known limitations](#9-known-limitations)).
+> - Tested with **Rekordbox 7** and **Python 3.14** on Windows 10/11 (see [Known limitations](#9-known-limitations)).
 
 ---
 
@@ -32,55 +32,45 @@ python main/predict_beatgrids_and_cues.py
 
 ## 1. Setup
 
-**You need:** Python (developed with 3.12-3.14), [ffmpeg and ffprobe](https://ffmpeg.org/download.html) on your `PATH`, and **Rekordbox 7** with your library (Rekordbox 6 is untested).
+**Prerequisite:** Rekordbox installed, preferably Rekordbox 7 (other versions have not been tested)
 
-```bash
-git clone <this repository>
-cd <repository folder>
-python -m venv .venv
-.venv\Scripts\activate            # macOS/Linux: source .venv/bin/activate
-pip install -r requirements.txt
-python main/populate_env.py
-```
+1. On GitHub click **Code > Download ZIP** and unzip it at your desired installation location.
+2. Double-click **`SETUP (Windows).bat`** or **`SETUP (MacOS).command`**.
+   - Windows: if it says "Windows protected your PC", click **More info > Run anyway**.
+   - macOS: if it refuses to open, right-click the file > **Open** > **Open**. It may ask once for your Mac password (Python installer).
+3. When it is done, copy the three new shortcuts (`Beatgrids and Cues`, `Beatgrids only`, `Cues only`) to your Desktop and double-click one to run. If you move the program folder, run the setup again.
 
-`populate_env.py` finds your Rekordbox database (`master.db`) and its encryption key and writes them to `data/.env`. It keeps values that already work, fills missing ones, and lists at the end anything it could not find so you can enter it by hand. Run it again any time (`--force` overwrites working values too).
+Advanced: `python -m lib.setup_install [--force] [--no-download] [--no-pause]` in a terminal.
 
-The trained models must be present in `data/models/` (`beatgrid/*.json`, `cues/*.pkl`); they are part of the repository.
-
-Check that everything is found:
-
-```bash
-python main/predict_beatgrids_and_cues.py --help
-```
 
 ## 2. Your first run
 
 1. **Back up your library** in Rekordbox (File > Library > Backup Library). Scripts also back up `master.db` themselves, but one manual backup is cheap insurance.
-2. **Import a few new tracks** into Rekordbox and let Rekordbox finish its own analysis. The scripts wait for Rekordbox's analysis files of each track (they need them), so you can also start the script while Rekordbox is still analysing; it simply works on each track as soon as Rekordbox is done with it.
-3. **Dry run**: analyse and report, write nothing.
-   ```bash
-   python main/predict_beatgrids_and_cues.py --dry-run
-   ```
-   By default the script takes tracks **added in the last 8 hours**. To pick others, see [song selection](#song-selection).
-4. **Real run** on 2-3 tracks first, then check them in Rekordbox:
-   ```bash
-   python main/predict_beatgrids_and_cues.py --names "Track name 1,Track name 2"
-   ```
-5. **Restart Rekordbox** afterwards (new BPM, grids and cues show after a restart / reloading the track). It is fine to run the scripts while Rekordbox is open, but Rekordbox does not see database changes until it is restarted.
-6. Happy? Run it on whatever you like: `--since-hours 24`, `--playlist "New"`, ... Stop any time with `Ctrl+C`; finished tracks are kept.
+2. **Import 2-3 new tracks** into Rekordbox and let Rekordbox finish its own analysis. The scripts wait for Rekordbox's analysis files of each track (they need them), so you can also start the script while Rekordbox is still analysing; it simply works on each track as soon as Rekordbox is done with it.
+3. **Double-click the `Beatgrids and Cues` shortcut.** It takes the tracks **added in the last 8 hours** and shows its progress in a live table. When it is done, press Enter to close the window.
+4. **Restart Rekordbox** and check the tracks (new BPM, grids and cues show after a restart / reloading the track). It is fine to run the scripts while Rekordbox is open, but Rekordbox does not see database changes until it is restarted.
+5. Happy? Import more tracks and run it again. Stop any time with `Ctrl+C`; finished tracks are kept.
+
+**Nothing found in the last 8 hours?** The window then asks what you want instead: tracks added in the last N hours, tracks added between two dates (it tells you how to type them), all tracks of a playlist, or the full list of options (`--help`) where you can type your own. So you can pick other tracks without a terminal.
+
+Want to try without writing anything, or give options right away? Use a terminal in the program folder and add options, see [song selection](#song-selection):
+
+```bash
+python main/predict_beatgrids_and_cues.py --dry-run
+python main/predict_beatgrids_and_cues.py --names "Track name 1,Track name 2"
+```
 
 ---
 
 ## 3. Which script do I run?
 
-Only the scripts in `main/` are meant to be run. Run them from the project folder (or from your IDE); each one finds the project root itself.
+The three scripts in `main/` are the ones to run. Double-click a shortcut made by the setup (or the `.py` file itself on Windows) to run one with its defaults, or start it from a terminal to give it options (below). Each script finds the project root itself and uses the `.venv` automatically.
 
 | Script | What it does | When to use it |
 |---|---|---|
 | `predict_beatgrids_and_cues.py` | Beat grid **and** cues for the same songs, one run, one live table. A song is done when its grid is written, its cues are written and `master.db` is committed. | **The normal choice.** |
 | `predict_beatgrids.py` | Beat grid only (and BPM, cue snapping, review playlists). | You do not want cues, or you want to review grids before cues. |
 | `predict_cues.py` | Cues only, for tracks whose grid `predict_beatgrids.py` analysed earlier (it uses that grid as the scaffold). | After a grid-only run; redoing cues; `--recolor` repair. |
-| `populate_env.py` | Finds the Rekordbox database path and key, checks ffmpeg, writes `data/.env`. | Once during setup, and when Rekordbox moves its database. |
 
 ### Song selection
 
@@ -124,6 +114,7 @@ python main/predict_cues.py --recolor                                  # repair 
 | `--defer-database-write` | do not write `master.db` now; BPM updates are kept for the next run (the combined script then writes no cues) |
 | `--wait-minutes N` | how long to wait per track for Rekordbox's own analysis files (default 30) |
 | `--plain` | plain log lines instead of the live table (also used automatically when output is not a terminal) |
+| `--no-pause` | (all scripts) do not wait for Enter at the end |
 
 **Cue options** (`predict_beatgrids_and_cues.py` and `predict_cues.py`):
 
@@ -271,20 +262,21 @@ The scripts also wait for Rekordbox's own analysis files per track (they contain
 ## 7. Project layout and data folders
 
 ```
-main/        the scripts you run (see section 3)
+SETUP (Windows).bat / SETUP (MacOS).command    one-click installation (section 1): install Python 3.14 if missing, then run lib/setup_install.py
+main/        the three scripts you run (see section 3)
 lib/         all importable code
   rekordbox/   database access, ANLZ file bytes, cue snapping, track selection, ground truth
   beatgrid/    detection pipeline, learned rankers, advanced models, review flags, grid writer
   cues/        drop/fakeout predictors, feature extraction, cue rules, cue export
-  adaptive_workers.py, progress_table.py, audio_features.py, paths.py
-data/        runtime data (not for git: .env, state/, backups/, cache/); models/ holds the trained models
+  adaptive_workers.py, progress_table.py, audio_features.py, paths.py, ffmpeg_tools.py, populate_env.py and setup_install.py (used by the SETUP files), interactive_selection.py, exit_pause.py
+data/        runtime data (not for git: .env, state/, backups/, cache/, ffmpeg/); models/ holds the trained models
 logs/        reports of the last runs (not for git)
 debug/       generated analysis output of the dev scripts (not for git)
 dev/         tools to evaluate and retrain (section 8)
 docs/        project history and hand-over notes
 ```
 
-`lib/paths.py` is the single place that defines every path. Settings live in `data/.env`; besides the two Rekordbox entries, optional keys are `CUE_SNAP_MARGIN_MS`, `BEATGRID_ANALYSIS_MODE` (`auto`/`basic`/`advanced`, normally set with the command line flags) and a few `BEATGRID_*` tuning fractions.
+`lib/paths.py` is the single place that defines every path. Settings live in `data/.env`; besides the two Rekordbox entries and `FFMPEG_PATH` / `FFPROBE_PATH` (the ffmpeg programs to use), optional keys are `CUE_SNAP_MARGIN_MS`, `BEATGRID_ANALYSIS_MODE` (`auto`/`basic`/`advanced`, normally set with the command line flags) and a few `BEATGRID_*` tuning fractions.
 
 Dev scripts expect their inputs in `debug/` subfolders (all git-ignored):
 
@@ -327,7 +319,7 @@ Scripts that need many inputs say what they need in their docstring or `--help`.
 
 ## 9. Known limitations
 
-- **Windows and Rekordbox 7 only.** Developed and tested on Windows 10/11 with Rekordbox 7; Rekordbox 6 is untested. The terminal UI has Windows and POSIX key handling, but a run on macOS/Linux has not been tested with a real Rekordbox library. "Is Rekordbox running?" is only detected on Windows.
+- **Tested on Windows 10/11 with Rekordbox 7 and Python 3.14.** The terminal UI has Windows and POSIX key handling, but a run on macOS has not been tested with a real Rekordbox library. "Is Rekordbox running?" is only detected on Windows.
 - **Music.** Built for bass music with a strong kick/snare grid. Acapellas, ambient, beatless and continuously tempo-changing tracks are not handled (they may get flagged or a wrong grid).
 - **One constant grid per tempo section.** Gradual tempo changes are not modelled. Only the `PQTZ` grid tag is rewritten; a populated `PQT2` tag (tempo-change tracks) has never been seen and is left alone.
 - **Cues** are only written for tracks without cues of their own and with a single tempo section. Tracks with a very unusual structure (several short drops, vocal/melodic tracks that follow a different cue system) will get plausible but wrong cues. Drop 1 matters most; drop 2 and fakeout placement are less accurate.
@@ -337,11 +329,12 @@ Scripts that need many inputs say what they need in their docstring or `--help`.
 
 | Problem | What to do |
 |---|---|
-| `REKORDBOX_DATABASE_PATH missing` | run `python main/populate_env.py`, or pass `--database-path` / `--encryption-key` |
-| ffmpeg / ffprobe not found | install ffmpeg and put it on your `PATH` |
+| `REKORDBOX_DATABASE_PATH missing` | run the setup again, or pass `--database-path` / `--encryption-key` |
+| ffmpeg / ffprobe not found | run the setup again (it finds or downloads ffmpeg), or set `FFMPEG_PATH` and `FFPROBE_PATH` in `data/.env` to the full paths of the programs |
 | "Rekordbox analysis files never appeared" (timeout) | Rekordbox has not analysed that track (is auto-analysis on? does the file exist?). Raise `--wait-minutes` or analyse the track in Rekordbox and run again |
 | "psutil is not installed ... using 2 workers" | `pip install psutil`, or give `--force-number-of-jobs N` |
 | New grid/cues do not show in Rekordbox | restart Rekordbox; load the track again |
+| A shortcut does nothing or says the file was not found | the program folder was moved or renamed: run the setup again |
 | A track was skipped | the table's note column says why (audio file missing, has cues of its own, several tempo sections, ...) |
 | Results look systematically off by a few ms | your alignment convention differs from the one the models learned; see [Will it work on my library?](#5-will-it-work-on-my-library) |
 

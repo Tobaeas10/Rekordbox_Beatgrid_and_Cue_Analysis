@@ -174,6 +174,7 @@ def probe_json(path):
     import os
     import subprocess
     import json
+    from lib import ffmpeg_tools
     try:
         file_status = os.stat(path)
         key = (str(path), file_status.st_mtime, file_status.st_size)
@@ -181,7 +182,7 @@ def probe_json(path):
         key = None
     if key is not None and key in _PROBE_MEMO:
         return _PROBE_MEMO[key]
-    probe_result = json.loads(subprocess.run(["ffprobe", "-v", "error", "-print_format", "json", "-show_streams", "-show_format", path],
+    probe_result = json.loads(subprocess.run([ffmpeg_tools.executable("ffprobe"), "-v", "error", "-print_format", "json", "-show_streams", "-show_format", path],
                                   capture_output=True, text=True).stdout)
     if key is not None:
         _PROBE_MEMO.clear()
@@ -193,13 +194,13 @@ def _load_audio(path, sample_rate=None):
     """Load mono float32 through ffmpeg (fixed decoder, so header delay handling is the same for every container).
     librosa is only a fallback."""
     import subprocess
-    import shutil
-    if shutil.which("ffmpeg") is not None:
+    from lib import ffmpeg_tools
+    if ffmpeg_tools.is_available("ffmpeg"):
         try:
             rate = sample_rate
             if rate is None:
                 rate = int(next(stream for stream in probe_json(path)["streams"] if stream.get("codec_type") == "audio")["sample_rate"])
-            raw = subprocess.run(["ffmpeg", "-v", "error", "-i", path, "-f", "f32le", "-ac", "1",
+            raw = subprocess.run([ffmpeg_tools.executable("ffmpeg"), "-v", "error", "-i", path, "-f", "f32le", "-ac", "1",
                                   "-ar", str(rate), "-"], capture_output=True, check=True).stdout
             return np.frombuffer(raw, dtype=np.float32).copy(), rate
         except Exception:
