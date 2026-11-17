@@ -6,6 +6,7 @@ Detects:
   REKORDBOX_DATABASE_PATH   path of the live master.db   (pyrekordbox config, then well-known locations)
   REKORDBOX_ENCRYPTION_KEY  SQLCipher key                (existing .env value if it works, else captured from
                                         pyrekordbox's own DEBUG log / its built-in blob)
+  REKORDBOX_INSTALL_PATH     base folder of the Rekordbox PROGRAM (optional; lib/rekordbox/install_locations.py)
   FFMPEG_PATH, FFPROBE_PATH  the ffmpeg / ffprobe programs   (existing .env value if it works, else found on PATH or
                                         in common install folders, else downloaded into data/ffmpeg; PATH is never changed)
 Also checks the share folder next to master.db.
@@ -27,6 +28,7 @@ import sys
 from pathlib import Path
 
 from lib import ffmpeg_tools, paths
+from lib.rekordbox import install_locations
 
 ENV_PATH = paths.ENV_FILE
 TEMPLATE_PATH = paths.DATA / "_env"
@@ -45,7 +47,9 @@ except ImportError:
     except ImportError:
         RekordboxDatabase = None
 
-DEFAULTS = []
+DEFAULTS = [
+    ("CUE_SNAP_MARGIN_MS", "10", "# --- main/other helpful tools/snap_cues_to_grid.py ---\n# Cues/hot cues/loop ends closer than this (ms) to a beat get moved onto it; farther ones stay as they are"),
+]
 REQUIRED = ("REKORDBOX_DATABASE_PATH", "REKORDBOX_ENCRYPTION_KEY")
 
 
@@ -251,6 +255,14 @@ def main():
         else:
             missing.append(("REKORDBOX_ENCRYPTION_KEY", "needs REKORDBOX_DATABASE_PATH first; key is auto-detected once master.db is found"))
             print("[MISSING] REKORDBOX_ENCRYPTION_KEY  (needs REKORDBOX_DATABASE_PATH first)")
+
+    # --- REKORDBOX_INSTALL_PATH (optional: BASE folder holding the versioned program folders, so it survives Rekordbox updates)
+    install_path, install_note = install_locations.find_install_path(current_values.get("REKORDBOX_INSTALL_PATH"), arguments.force)
+    if install_path:
+        found["REKORDBOX_INSTALL_PATH"] = str(install_path)
+        print(f"[ok]      REKORDBOX_INSTALL_PATH    = {install_path}\n          ({install_note}; newest: {install_locations.install_entries(install_path)[0].name})")
+    else:
+        print(f"[WARN]    REKORDBOX_INSTALL_PATH    not found ({install_note}); optional, only needed by main/other helpful tools/kill_rekordbox_samples.py")
 
     # --- FFMPEG_PATH / FFPROBE_PATH
     tool_paths = ffmpeg_tools.ensure_tools(current_values, force=arguments.force, allow_download=not arguments.no_download)

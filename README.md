@@ -264,8 +264,9 @@ The scripts also wait for Rekordbox's own analysis files per track (they contain
 ```
 SETUP (Windows).bat / SETUP (MacOS).command    one-click installation (section 1): install Python 3.14 if missing, then run lib/setup_install.py
 main/        the three scripts you run (see section 3)
+  other helpful tools/   small standalone helpers (see "Other helpful tools" below)
 lib/         all importable code
-  rekordbox/   database access, ANLZ file bytes, cue snapping, track selection, ground truth
+  rekordbox/   database access, ANLZ file bytes, cue snapping, track selection, ground truth, Rekordbox program-folder detection (install_locations.py)
   beatgrid/    detection pipeline, learned rankers, advanced models, review flags, grid writer
   cues/        drop/fakeout predictors, feature extraction, cue rules, cue export
   adaptive_workers.py, progress_table.py, audio_features.py, paths.py, ffmpeg_tools.py, populate_env.py and setup_install.py (used by the SETUP files), interactive_selection.py, exit_pause.py
@@ -277,6 +278,17 @@ docs/        project history and hand-over notes
 ```
 
 `lib/paths.py` is the single place that defines every path. Settings live in `data/.env`; besides the two Rekordbox entries and `FFMPEG_PATH` / `FFPROBE_PATH` (the ffmpeg programs to use), optional keys are `CUE_SNAP_MARGIN_MS`, `BEATGRID_ANALYSIS_MODE` (`auto`/`basic`/`advanced`, normally set with the command line flags) and a few `BEATGRID_*` tuning fractions.
+
+### Other helpful tools
+
+Standalone helpers in `main/other helpful tools/`. They share the project's `.env` and libraries, so run SETUP first.
+
+| script | what it does |
+|---|---|
+| `snap_cues_to_grid.py` | Moves every memory cue, hot cue and loop end of the whole collection onto the nearest beat of its grid when it is within `CUE_SNAP_MARGIN_MS` (default 10 ms); cues farther away stay as they are. Updates master.db and the ANLZ files. Backups go to `data/backups/snap/`, the report to `logs/`. Close Rekordbox first, use `--dry-run` to only report. |
+| `kill_rekordbox_samples.py` | Renames the demo/sample files Rekordbox installs (`DemoTrack.zip`, `GROOVE_CIRCUIT_FACTORY_SAMPLES.spp`, `MERGE FX.zip`, `OSC_SAMPLER.zip`) to `<name>.old` in every installed Rekordbox version. Run it again after each Rekordbox update. `--dry-run` only reports, `--undo` restores. On Windows, Program Files is protected: when a rename is denied the script asks for administrator rights itself (UAC prompt) and re-runs in an elevated window (`--no-elevate` turns that off). Close Rekordbox first. It only renames files and never touches the Rekordbox database, so remove the demo tracks from your collection by hand in Rekordbox. On macOS the exact location of these files inside the app bundle is not confirmed, so check with `--dry-run` first. |
+
+Both start with a double click or `python "main/other helpful tools/<script>.py"`. The Rekordbox program folder used by the second one is `REKORDBOX_INSTALL_PATH` in `data/.env`; SETUP detects it (default Program Files / Pioneer folders, `/Applications`, pyrekordbox's configuration, the Windows registry, a running Rekordbox) and you can override it by hand or with `--install-path`. It is the base folder that holds the versioned folders (for example `C:\Program Files\rekordbox`), so it keeps working after an update.
 
 Dev scripts expect their inputs in `debug/` subfolders (all git-ignored):
 
